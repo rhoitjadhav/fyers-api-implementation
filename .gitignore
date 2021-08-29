@@ -4,3 +4,6 @@ mycode
 TrueData--Fyers.zip
 *.txt
 __pycache__
+src/fyers_api/fyersLog.py
+src/fyers_api/websocket/test.py
+src/test1.py
