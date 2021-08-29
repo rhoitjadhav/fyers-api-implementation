@@ -4,7 +4,7 @@ import os
 # Server Config
 HOST = "localhost"
 PORT = 8000
-SERVER_URL = "http://localhost:8000"
+SERVER_URL = f"http://{HOST}:{PORT}"
 
 # Fyers Credentials
 APP_ID = os.getenv("APP_ID")
