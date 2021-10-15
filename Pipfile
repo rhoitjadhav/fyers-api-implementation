@@ -7,6 +7,9 @@ name = "pypi"
 fastapi = "*"
 uvicorn = "*"
 starlette = "*"
+finta = "*"
+redis = "*"
+mplfinance = "*"
 
 [dev-packages]
 
