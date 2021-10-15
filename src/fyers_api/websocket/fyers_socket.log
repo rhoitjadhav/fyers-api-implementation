@@ -752,3 +752,4 @@ AttributeError: 'MarketFeed' object has no attribute 'response'
 2021-08-29 17:17:17,187 - fyers_socket - INFO - /home/rohit/Documents/Rohit/Projects/fyers-api-implementation/src/fyers_api/websocket/ws.py - 246 - requesting data for symbolData
 2021-08-29 17:17:17,313 - fyers_socket - INFO - /home/rohit/Documents/Rohit/Projects/fyers-api-implementation/src/fyers_api/websocket/ws.py - 290 - Connection Initiated
 2021-08-29 17:17:17,400 - fyers_socket - INFO - /home/rohit/Documents/Rohit/Projects/fyers-api-implementation/src/fyers_api/websocket/ws.py - 335 - transmitted connection settings
+

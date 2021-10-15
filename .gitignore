@@ -7,3 +7,4 @@ __pycache__
 src/fyers_api/fyersLog.py
 src/fyers_api/websocket/test.py
 src/test1.py
+src/fyers_api/websocket/fyers_socket.log
