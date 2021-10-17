@@ -10,6 +10,7 @@ starlette = "*"
 finta = "*"
 redis = "*"
 mplfinance = "*"
+notebook = "*"
 
 [dev-packages]
 
