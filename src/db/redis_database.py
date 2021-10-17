@@ -18,6 +18,7 @@ class RedisDatabase:
 
         self._redis_client = redis.StrictRedis(self._host, self._port, self._db, self._password,
                                                decode_responses=decode_responses)
+        self._pipeline = self._redis_client.pipeline()
 
     def set(self, name, value):
         self._redis_client.set(name, value)
@@ -36,3 +37,10 @@ class RedisDatabase:
 
     def hget(self, name, key):
         return self._redis_client.hget(name, key)
+
+    @property
+    def pipeline(self):
+        return self._pipeline
+
+    def flush_db(self):
+        self._redis_client.flushdb()
