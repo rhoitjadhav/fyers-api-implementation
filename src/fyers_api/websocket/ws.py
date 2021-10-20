@@ -320,6 +320,7 @@ class FyersSocket():
                             self.logger.error(str(traceback.format_exc()))
                             self.logger.debug(self.message)
                             print("Exception is", e)
+                            continue
 
                     else:
                         self.reconnect_flag = True
