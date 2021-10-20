@@ -6,6 +6,7 @@ from datetime import timedelta
 # Modules
 from core import config
 from utils.helper import Helper
+from apps.bod_task.main import BODTask
 from apps.plot_graph.main import PlotGraph
 from db.redis_database import RedisDatabase
 from apps.market_feed.main import MarketFeed
@@ -42,9 +43,19 @@ def plot_graph(symbol):
 def store_intraday_ohlc(symbols):
     redis_cli = RedisDatabase()
     s = StoreIntradayOHLC(config.SERVER_URL, symbols, redis_cli)
-    s.fetch_access_authorization()
+    result = s.fetch_access_authorization()
+    if not result.success:
+        print(f"\n{result}")
+        return
     s.initialize()
     s.run()
+
+
+def bod_task():
+    r = RedisDatabase()
+    b = BODTask(r, config.SERVER_URL)
+    # b.redis_flush_db()
+    b.generate_auth_code()
 
 
 args = sys.argv
@@ -54,7 +65,7 @@ if len(args) < 2:
     sys.exit()
 
 if args[1] in {"market_feed", "store_intraday_ohlc"}:
-    _args = args[2].split(",")
+    _args = args[2].split(", ")
     func = globals()[args[1]]
     func(_args)
 
@@ -62,6 +73,10 @@ elif args[1] in {"plot_graph"}:
     _args = args[2]
     func = globals()[args[1]]
     func(_args)
+
+elif args[1] in {"bod_task"}:
+    func = globals()[args[1]]
+    func()
 
 else:
     print(f"Invalid Arguements: {args[1:]}")
