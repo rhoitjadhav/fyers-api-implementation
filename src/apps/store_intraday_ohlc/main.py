@@ -15,6 +15,7 @@ class StoreIntradayOHLC(FyersSocket):
     def __init__(self, server_url, symbols: List[str], redis_cli: RedisDatabase):
         self._server_url = server_url
         self._redis_cli = redis_cli
+        self._redis_pipe = self._redis_cli.pipeline
         self._access_authorization = None
         self._data_type = "symbolData"
         self._symbols = symbols
@@ -36,7 +37,7 @@ class StoreIntradayOHLC(FyersSocket):
             self._access_authorization = response["data"]["authorization"]
             return ReturnValue(True, data=self._access_authorization)
 
-        return ReturnValue(False, "Error while getting access authorization", error=response["error"])
+        return ReturnValue(False, response["message"], error=response["error"])
 
     def store_feed(self):
         for r in self.response:
@@ -52,7 +53,10 @@ class StoreIntradayOHLC(FyersSocket):
                 "volume": volume
             })
 
-            self._redis_cli.hset(name, key, value)
+            self._redis_pipe.hset(name, key, value)
+
+        self._redis_pipe.execute()
 
     def run(self):
+        print(f"Started Feed for {self._symbols}")
         self.subscribe()
