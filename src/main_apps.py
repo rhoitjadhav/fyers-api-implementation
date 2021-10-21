@@ -53,8 +53,8 @@ def store_intraday_ohlc(symbols):
 
 def bod_task():
     r = RedisDatabase()
-    b = BODTask(r, config.SERVER_URL)
-    # b.redis_flush_db()
+    b = BODTask(config.FYERS_USERNAME, config.FYERS_PASSWORD, config.PAN_ID, r, config.SERVER_URL)
+    b.redis_flush_db()
     b.generate_auth_code()
 
 
