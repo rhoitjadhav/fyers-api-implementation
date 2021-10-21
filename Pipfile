@@ -11,6 +11,7 @@ finta = "*"
 redis = "*"
 mplfinance = "*"
 notebook = "*"
+selenium = "*"
 
 [dev-packages]
 
