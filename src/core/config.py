@@ -7,10 +7,12 @@ PORT = 8545
 SERVER_URL = f"http://{HOST}:{PORT}"
 
 # Fyers Credentials
-APP_ID = os.getenv("APP_ID", "BEPTBTGALL-100")
+FYERS_USERNAME = os.getenv("FYERS_USERNAME")
+FYERS_PASSWORD = os.getenv("FYERS_PASSWORD")
+PAN_ID = os.getenv("PAN_ID")
+APP_ID = os.getenv("APP_ID")
 REDIRECT_URL = os.getenv("REDIRECT_URL", f"http://{HOST}:{PORT}/generate-access-token")
-APP_SECRET = os.getenv("APP_SECRET", "DOXRLGHAG2")
-CLIENT_ID = os.getenv("CLIENT_ID", "XR09997")
+APP_SECRET = os.getenv("APP_SECRET")
 
 # Redis Config
 REDIS_HOST = "localhost"
