@@ -1,8 +1,9 @@
 # Packages
+import sys
 import json
 import requests
 from typing import List
-from datetime import datetime
+from datetime import datetime, time
 from fyers_api.websocket.ws import FyersSocket
 
 # Modules
@@ -40,6 +41,10 @@ class StoreIntradayOHLC(FyersSocket):
         return ReturnValue(False, response["message"], error=response["error"])
 
     def store_feed(self):
+        if datetime.now().time() >= time(16, 5):
+            print("Trading hours ended! Exiting...")
+            sys.exit()
+
         for r in self.response:
             symbol = r["symbol"]
             timestamp = r["timestamp"]
