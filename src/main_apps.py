@@ -10,12 +10,20 @@ from apps.bod_task.main import BODTask
 from apps.plot_graph.main import PlotGraph
 from db.redis_database import RedisDatabase
 from apps.market_feed.main import MarketFeed
-from apps.store_intraday_ohlc.main import StoreIntradayOHLC
+from utils.zmq_helper import ZMQPublisher, ZMQSubscriber
+from apps.store_market_feed.main import StoreMarketFeed, StoreMarketFeedZmqSub
 
 
 def market_feed(symbols):
-    mf = MarketFeed(symbols, config.APP_ID, config.SERVER_URL)
-    mf.start_feed(mf.print_symbol_feed)
+    r = RedisDatabase()
+    z = ZMQPublisher("*", config.ZMQ_PORT)
+    mf = MarketFeed(config.API_SERVER_URL, symbols, r, z)
+    result = mf.fetch_access_authorization()
+    if not result.success:
+        print(f"\n{result}")
+        return
+    mf.initialize()
+    mf.run()
 
 
 def plot_graph(symbol):
@@ -42,7 +50,7 @@ def plot_graph(symbol):
 
 def store_intraday_ohlc(symbols):
     redis_cli = RedisDatabase()
-    s = StoreIntradayOHLC(config.SERVER_URL, symbols, redis_cli)
+    s = StoreMarketFeed(config.API_SERVER_URL, symbols, redis_cli)
     result = s.fetch_access_authorization()
     if not result.success:
         print(f"\n{result}")
@@ -51,9 +59,17 @@ def store_intraday_ohlc(symbols):
     s.run()
 
 
+def store_feed_zmq_sub():
+    r = RedisDatabase()
+    z = ZMQSubscriber(config.ZMQ_HOST, config.ZMQ_PORT)
+    s = StoreMarketFeedZmqSub(z, r)
+    s.intialize()
+    s.run()
+
+
 def bod_task():
     r = RedisDatabase()
-    b = BODTask(config.FYERS_USERNAME, config.FYERS_PASSWORD, config.PAN_ID, r, config.SERVER_URL)
+    b = BODTask(config.FYERS_USERNAME, config.FYERS_PASSWORD, config.PAN_ID, r, config.API_SERVER_URL)
     b.redis_flush_db()
     b.generate_auth_code()
 
@@ -64,7 +80,7 @@ if len(args) < 2:
     print("Too less parameters")
     sys.exit()
 
-if args[1] in {"market_feed", "store_intraday_ohlc"}:
+if args[1] in {"store_market_feed", "market_feed"}:
     _args = args[2].split(", ")
     func = globals()[args[1]]
     func(_args)
@@ -74,7 +90,7 @@ elif args[1] in {"plot_graph"}:
     func = globals()[args[1]]
     func(_args)
 
-elif args[1] in {"bod_task"}:
+elif args[1] in {"bod_task", "store_feed_zmq_sub"}:
     func = globals()[args[1]]
     func()
 
