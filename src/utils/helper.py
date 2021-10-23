@@ -1,4 +1,5 @@
 # Packages
+import json
 import requests
 from datetime import datetime
 
@@ -28,3 +29,25 @@ class Helper:
     @staticmethod
     def minute_to_seconds(minute):
         return minute * 60
+
+    @staticmethod
+    def convert_to_dict(data: str) -> dict:
+        """
+        Convert json string data to dict
+        Args:
+            data: json string
+        Returns:
+            dict: converted json string into dict
+        """
+        return json.loads(data)
+
+    @staticmethod
+    def convert_to_json(data: dict) -> str:
+        """
+        Converts dict to json string
+        Args:
+            data: dict data
+        Returns:
+            str: converted dict into string
+        """
+        return json.dumps(data)
