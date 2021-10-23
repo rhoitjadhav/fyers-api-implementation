@@ -12,6 +12,7 @@ redis = "*"
 mplfinance = "*"
 notebook = "*"
 selenium = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
