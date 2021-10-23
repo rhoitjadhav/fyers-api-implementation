@@ -1,63 +1,51 @@
 # Packages
-import requests
-from datetime import datetime
-
-# Modules
-from utils.data_classes import ReturnValue
-from constants.server_url import ServerUrl
+from typing import List
 from fyers_api.websocket.ws import FyersSocket
 
+# Modules
+from utils.helper import Helper
+from utils.zmq_helper import ZMQPublisher
+from constants.server_url import ServerUrl
+from utils.data_classes import ReturnValue
+from db.redis_database import RedisDatabase
 
-class MarketFeed:
-    def __init__(self, symbols, app_id, server_url):
-        self._symbols = symbols
-        self._app_id = app_id
+
+class MarketFeed(FyersSocket):
+    def __init__(self, server_url, symbols: List[str], redis_cli: RedisDatabase, zmq_publisher: ZMQPublisher):
         self._server_url = server_url
+        self._redis_cli = redis_cli
+        self._zmq_publisher = zmq_publisher
 
-        self._access_token = None
+        self._redis_pipe = self._redis_cli.pipeline
+        self._zmq_publisher_socket = None
         self._access_authorization = None
-        self._fyers_socket = None
+        self._data_type = "symbolData"
+        self._symbols = symbols
 
-    def _get_access_authorization(self):
-        if self._access_authorization:
-            return self._access_authorization
+        FyersSocket.websocket_data = self.publish_feed
 
-        # Request API server for access token
+    def initialize(self):
+        super().__init__(self._access_authorization, self._data_type, self._symbols)
+        self._zmq_publisher.connect()
+
+    def fetch_access_authorization(self) -> ReturnValue:
         url = self._server_url + ServerUrl.ENDPOINT_TOKENS_API_SERVER
 
-        response = requests.get(url)
+        response = Helper.request_http_get(url, None)
         if response.status_code != 200:
             return ReturnValue(False, "Error while getting access authorization", error=response.reason)
 
         response = response.json()
         if response["success"]:
-            return ReturnValue(True, data=response["data"]["authorization"])
+            self._access_authorization = response["data"]["authorization"]
+            return ReturnValue(True, data=self._access_authorization)
 
-        return ReturnValue(False, "Error while getting access authorization", error=response["error"])
+        return ReturnValue(False, response["message"], error=response["error"])
 
-    @staticmethod
-    def print_symbol_feed(feed):
-        for r in feed.response:
-            t = datetime.fromtimestamp(r['last_traded_time']).strftime("%Y-%m-%d %H:%M:%S")
-            ltt = f"LTT: {t}"
-            ltp = f"LTP: {r['ltp']}"
-            sym = f"{r['symbol']}"
-            vol = f"Vol: {r['vol_traded_today']}"
-            bqt = f"Bqt: {r['tot_buy_qty']}"
-            msg = f"  {sym}-> {ltp}, {vol}, {ltt}, {bqt}"
-            print(msg, end="\r")
+    def publish_feed(self):
+        feed = Helper.convert_to_json(self.response)
+        self._zmq_publisher.send_msg(feed)
 
-    def start_feed(self, feed_caputring_object):
-        access_authorization = self._get_access_authorization().data
-        if not access_authorization:
-            return_value = ReturnValue(False, "Access Authorization not found")
-            print(return_value)
-            return
-
-        data_type = "symbolData"
-
-        FyersSocket.websocket_data = feed_caputring_object
-
-        print(f"Feed Started for symbols: {self._symbols}")
-        self._fyers_socket = FyersSocket(access_token=access_authorization, data_type=data_type, symbol=self._symbols)
-        self._fyers_socket.subscribe()
+    def run(self):
+        print(f"Started Feed for {self._symbols}")
+        self.subscribe()
