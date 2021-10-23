@@ -26,7 +26,7 @@ class PlotGraph:
             range_from: str,
             range_to: str,
     ):
-        url = config.SERVER_URL + ServerUrl.ENDPOINT_HISTORICAL_DATA_API_SERVER
+        url = config.API_SERVER_URL + ServerUrl.ENDPOINT_HISTORICAL_DATA_API_SERVER
         payload = {
             "symbol": self._symbol["name"],
             "resolution": resolution,
