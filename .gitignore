@@ -9,3 +9,4 @@ src/fyers_api/websocket/test.py
 src/test1.py
 src/fyers_api/websocket/fyers_socket.log
 /src/.ipynb_checkpoints/
+.env
