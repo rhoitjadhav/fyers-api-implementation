@@ -20,6 +20,9 @@ class RedisDatabase:
                                                decode_responses=decode_responses)
         self._pipeline = self._redis_client.pipeline()
 
+    def keys(self, pattern="*"):
+        return self._redis_client.keys(pattern)
+
     def set(self, name, value):
         self._redis_client.set(name, value)
 
