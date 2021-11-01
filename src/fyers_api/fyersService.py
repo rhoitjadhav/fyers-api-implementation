@@ -90,18 +90,22 @@ class FyersAsyncService:
                 self.logObj.logEntryFunc(str(int(datetime.now(tz=timezone.utc).timestamp() * 1000)), "getCall", "", "",e)
         return response
 
-    def getCall(self, api, header, data=None):
+    def getCall(self, api, header, data=None,data_flag=False):
         try:
+            if data_flag:
+                url = Config.data_Api + api
+            else:
+                url = Config.Api + api
             reqClient = httpclient.AsyncHTTPClient()
             if data is not None:
                 try:
                     url_params = urllib.urlencode(data)
                 except Exception as e:
                     url_params = urllib.parse.urlencode(data)
-                url = Config.Api + api + "?" + url_params
+                url = url + "?" + url_params
                 request = httpclient.HTTPRequest(url, method="GET",headers={"Authorization": header, 'Content-Type': self.content})
             else:
-                URL = Config.Api + api
+                URL = url
                 request = httpclient.HTTPRequest(URL, method="GET",headers={"Authorization": header, 'Content-Type': self.content})
 
             response = reqClient.fetch(request, raise_error=False)

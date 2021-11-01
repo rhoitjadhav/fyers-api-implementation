@@ -1,10 +1,11 @@
 import sys
-sys.path.insert(0, "/home/fyers//Documents/fyers_v2/Python_sdk/fyers-api-py/")
-from mycode.fyers_api import fyersModel, accessToken
+sys.path.insert(0, "/home/piyush/Documents/fyers_v2/Python_SDK/fyers-api-py/")
+from fyers_api import fyersModel
 import webbrowser
-
-
-# from fyers_api import websocket as ws
+from fyers_api import accessToken
+from fyers_api.Websocket import ws
+import time
+# import asyncio
 
 def api_call(token,client_id):
 	# access_token = "your_access_token_from_generate_access_token_function" ## access_token from the rgenerate_access_token function
@@ -13,7 +14,7 @@ def api_call(token,client_id):
 	access_token = token
 	# appId = client_id.split(":")[0]
 	# import ipdb;ipdb.set_trace()
-	fyers = fyersModel.FyersModel(token=access_token, is_async=False, log_path="/home/fyers/Documents/samplelogs", client_id=client_id)
+	fyers = fyersModel.FyersModel(token=access_token,is_async=True,client_id=client_id)
 	fyers.token = access_token
 	#
 	# print(fyers.get_profile())
@@ -48,22 +49,59 @@ def api_call(token,client_id):
 	# print(fyers.multiple_place_orders([{"symbol":"NSE:SBIN-EQ","qty":"1","type":"1","side":"1","productType":"INTRADAY","limitPrice":"191","stopPrice":"0","disclosedQty":"0","validity":"DAY","offlineOrder":"False","stopLoss":"0","takeProfit":"0"},{"symbol":"NSE:SBIN-EQ","qty":"1","type":"1","side":"1","productType":"INTRADAY","limitPrice":"191","stopPrice":"0","disclosedQty":"0","validity":"DAY","offlineOrder":"False","stopLoss":"0","takeProfit":"0"}]))
 	#
 	# print(fyers.multiple_modify_orders([{"id":"120080780536", "type":1, "limitPrice": 190, "stopPrice":0},{"id":"120080777069", "type":1, "limitPrice": 190}]))
-	# ws.FyersSocket.websocket_data = custom_message
-	# # data_type = "orderUpdate"
-	# data_type = "symbolData"
-	# symbol = ["MCX:SILVERMIC21JUNFUT"]
-	# access_token = client_id+":"+access_token
-	# # print(f"access_token:{access_token}")
-	# fyersSocket = ws.FyersSocket(access_token=access_token, data_type=data_type,symbol=symbol)
-	# # import ipdb;ipdb.set_trace()
-	# fyersSocket.subscribe()
-
-
+	
+	# p = threading.Thread(target=fyersSocket.subscribe)
+	# p.start()
+	# data = {"symbol":"NSE:SBIN-EQ","resolution":"D","date_format":"0","range_from":"1622097600","range_to":"1622097685","cont_flag":"1"}
+	# fyers.history(data)
+	# print(response)
 	# for i in range(0,100):
 	# 	print(fyers.get_profile())
 	# 	print(fyers.tradebook())
 	# 	print(fyers.positions())
-
+	access_token = "L9NY34Z6BW-100:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhcGkuZnllcnMuaW4iLCJpYXQiOjE2MzM2Njc5MjksImV4cCI6MTYzMzczOTQ0OSwibmJmIjoxNjMzNjY3OTI5LCJhdWQiOlsieDowIiwieDoxIiwieDoyIiwiZDoxIiwiZDoyIiwieDoxIiwieDowIl0sInN1YiI6ImFjY2Vzc190b2tlbiIsImF0X2hhc2giOiJnQUFBQUFCaFg4dFotcFZpOGdvYmMtMlRfNmNmYlowQlVFbVJFel9XSjJCRmJTRURWUm1GbDRzdW5tQ3FmQWN6bDVESkZsMEJLeEw3N3E5RUttMWRYNzcta05VaXhiNE4xY3ZoVGU0RGx4YUFBTERuekhqeU4xQT0iLCJkaXNwbGF5X25hbWUiOiJQSVlVU0ggUkFKRU5EUkEgS0FQU0UiLCJmeV9pZCI6IkRQMDA0MDQiLCJhcHBUeXBlIjoxMDAsInBvYV9mbGFnIjoiTiJ9.SqubA2d3axSDQW3xah8d_ZI_xFQSkDeSExv4EvotuGs"
+	# # loop = asyncio.new_event_loop()
+	data_type = "symbolData"
+	# data_type = "orderUpdate"
+	# symbol =  ["MCX:SILVERMIC21NOVFUT","MCX:NATURALGAS21SEPFUT"]
+	symbol =["NSE:NIFTY50-INDEX","NSE:NIFTYBANK-INDEX","NSE:NIFTYAUTO-INDEX","NSE:NIFTYALPHA50-INDEX","BSE:150MIDCAP-INDEX"]
+	# symbol =["NSE:NIFTY50-INDEX"]
+	# symbol=["NSE:NIFTY2190917350CE","NSE:NIFTY2190917350PE"]
+	# symbol = ["NSE:SBIN-EQ","NSE:ONGC-EQ"]
+		# fs = ws.FyersSocket(access_token=access_token, data_type=data_type,run_background=True)
+	fs = ws.FyersSocket(access_token=access_token,run_background=False,log_path="/home/piyush/Downloads/")
+	fs.websocket_data = custom_message
+	# fs.on_open = onopen
+	# fs.on_error = onerror
+	# fs.init_connection()
+	# time.sleep(5)
+	# import ipdb;ipdb.set_trace()
+	# fs.subscribe(symbol=symbol)
+	# def op_open(fs,fetch_symbol):
+	# 	on_open(fetch_data_symbolhigh low)
+	# def on_close(fs,time):
+	# 	on_close(3:15)
+	# def custom_message(message):
+	# 	message
+	# fs.on_open()
+	# fs.on_close()
+	# fs.on_message()
+	# fs.on_error()
+	# fs.init_connection()
+	# import ipdb;ipdb.set_trace()
+	fs.subscribe(symbol=symbol,data_type=data_type)
+	# # time.sleep(5)
+	# # fs.subscribe(symbol=["MCX:SILVER21SEPFUT"])
+	# print(fyers.get_profile())
+	# print(fyers.tradebook())
+	# print(fyers.positions())
+	# # print("unsubscribed symbol")
+	# # symbol = ["NSE:ONGC-EQ"]
+	# # fs.unsubscribe(symbol=symbol)
+	fs.keep_running()
+	# fs.subscribe(run_background=False)
+	# with ThreadPoolExecutor(3) as executor:
+	# 	task = executor.submit(fs.subscribe())
 
 def getauthToken(client_id,redirect_uri,response_type,scope,state,nonce):
 	"""
@@ -75,7 +113,7 @@ def getauthToken(client_id,redirect_uri,response_type,scope,state,nonce):
 		    https://www.google.com/?auth_code=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTM1ODY2NzEsInN1YiI6ImF1dGhDb2RlIiwiYXBwX2lkIjoiQjhQV0xWSDhUNiIsImlzcyI6ImFwaS5sb2dpbi5meWVycy5pbiIsImF1ZCI6WyJ4OjAiLCJ4OjEiLCJ4OjIiXSwidXVpZCI6ImZhOGNhYjE3ZWU4OTQzMGRhZjA1YWUxNDI2YWVkYzI4IiwiaXBBZGRyIjoiMjIzLjIzMy40Mi40NiIsImRpc3BsYXlfbmFtZSI6IkRQMDA0MDQiLCJpYXQiOjE1OTM1ODYzNzEsIm5iZiI6MTU5MzU4NjM3MX0.IMJHzQGHQgyXt_XN0AgDrMN1keR4qolFFKO6cyXTnTg&user_id=DP00404
 		 4. You have to take the auth_code from the url and use that token in your generate_access_token function.
 	"""
-	appSession = accessToken.SessionModel(client_id = client_id, redirect_uri = redirect_uri, response_type=response_type, scope=scope, state=state, nonce=nonce)
+	appSession = accessToken.SessionModel(client_id = client_id, redirect_uri = redirect_uri,response_type=response_type,scope=scope,state=state,nonce=nonce)
 	generateTokenUrl = appSession.generate_authcode()
 	print((generateTokenUrl))
 	webbrowser.open(generateTokenUrl,new=1)
@@ -94,23 +132,25 @@ def generate_access_token(auth_code,client_id,redirect_uri,secret_key,grant_type
 	"""
 	# import ipdb;
 	# ipdb.set_trace()
-	appSession = accessToken.SessionModel(client_id = client_id, redirect_uri =redirect_uri, secret_key = secret_key, grant_type=grant_type)
+	appSession = accessToken.SessionModel(client_id = client_id,redirect_uri =redirect_uri,secret_key = secret_key,grant_type=grant_type)
 	appSession.set_token(auth_code)
 	access_token = appSession.generate_token()
 	return access_token
 
-def custom_message(self):
-    print ("Custom " + str(self.response))   
+def custom_message(msg):
+    print (f"Custom:{msg}")   
 
+def onopen():
+	print("Websocket connected")
 
-
-
+def onerror(msg):
+	print(msg)	
 
 def main():
 
 	redirect_uri= "https://beta-rest.tradingview.com/trading/oauth-redirect/fyers/"
-	# client_id = "GME7IALSYJ-102"
-	client_id = "TWQFQCS0Q4-101"
+	client_id = "L9NY34Z6BW-100"
+	# client_id = "TWQFQCS0Q4-101"
 	secret_key = "WGKBQ43W2G"
 	grant_type = "authorization_code"
 	response_type = "code"
@@ -122,8 +162,9 @@ def main():
 
 	# print(generate_access_token(auth_code, client_id, redirect_uri,secret_key,grant_type))
 
-	access_token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhcGkuZnllcnMuaW4iLCJpYXQiOjE2MjM5MTMyMDEsImV4cCI6MTYyMzk3NjIwMSwibmJmIjoxNjIzOTEzMjAxLCJhdWQiOlsieDoyIiwieDoxIiwieDowIiwiZDoxIiwiZDoyIl0sInN1YiI6ImFjY2Vzc190b2tlbiIsImF0X2hhc2giOiJnQUFBQUFCZ3l2THhSWHVLSGxYWGU2YmNNR0RQcU84TDJqNmxVUlJJd0RGU2NzcDMyU2JSZzlYQVhzTW5JRVRNT3l1TEJXc2NkZEduY0FVUmVaTWZNYTdaTmhzT0FlS3NHS1dSQV9WTUNYaVdvOXBuMVFsZEpyST0iLCJkaXNwbGF5X25hbWUiOiJQSVlVU0ggUkFKRU5EUkEgS0FQU0UiLCJmeV9pZCI6IkRQMDA0MDQiLCJhcHBUeXBlIjoxMDEsInBvYV9mbGFnIjoiTiJ9.s7lmDQ6ITzXKkkevY40qcgZ7gm5SJGxWUyLzQQX9tHk"
-	# api_call(access_token , client_id)
+	access_token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhcGkuZnllcnMuaW4iLCJpYXQiOjE2MzM1ODE3MzEsImV4cCI6MTYzMzY1MzAxMSwibmJmIjoxNjMzNTgxNzMxLCJhdWQiOlsieDowIiwieDoxIiwieDoyIiwiZDoxIiwiZDoyIiwieDoxIiwieDowIl0sInN1YiI6ImFjY2Vzc190b2tlbiIsImF0X2hhc2giOiJnQUFBQUFCaFhucWpFNjhncHMtNjRzZGxjc0lMNFl0UmktQWRNeGdhcjByREs2RVlTbXVxQ0puVm0zWjN4Vk1hLXBsbV9GQzl1c0lwT3liUHVySGI4eURTUGZwTWdRNkVXNzZmNzFxS1JmWTcyUkZrWXZLX3AzZz0iLCJkaXNwbGF5X25hbWUiOiJQSVlVU0ggUkFKRU5EUkEgS0FQU0UiLCJmeV9pZCI6IkRQMDA0MDQiLCJhcHBUeXBlIjoxMDAsInBvYV9mbGFnIjoiTiJ9.U3qRPL3kJrE9gZq6DvPX14pHK3yikd826q25hhwOWpg"
+
+	api_call(access_token , client_id)
 
 if __name__ == '__main__':
 	main()

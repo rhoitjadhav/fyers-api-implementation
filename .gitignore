@@ -5,8 +5,8 @@ TrueData--Fyers.zip
 *.txt
 __pycache__
 src/fyers_api/fyersLog.py
-src/fyers_api/websocket/test.py
+src/fyers_api/Websocket/test.py
 src/test1.py
-src/fyers_api/websocket/fyers_socket.log
+src/fyers_api/Websocket/fyers_socket.log
 /src/.ipynb_checkpoints/
 .env
