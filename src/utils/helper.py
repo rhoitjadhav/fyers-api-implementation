@@ -27,6 +27,19 @@ class Helper:
         return datetime.now()
 
     @staticmethod
+    def get_current_time_in_str(fmt: str) -> str:
+        """
+        Returns current datetime in string format
+
+        Args:
+            fmt: time format (%d-%m-%Y)
+
+        Returns:
+            str: datetime in string
+        """
+        return datetime.now().strftime(fmt)
+
+    @staticmethod
     def minute_to_seconds(minute):
         return minute * 60
 
