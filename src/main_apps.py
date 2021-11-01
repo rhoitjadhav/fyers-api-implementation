@@ -7,11 +7,30 @@ from datetime import timedelta
 from core import config
 from utils.helper import Helper
 from apps.bod_task.main import BODTask
+from constants.server_url import ServerUrl
 from apps.plot_graph.main import PlotGraph
+from utils.data_classes import ReturnValue
 from db.redis_database import RedisDatabase
-from apps.market_feed.main import MarketFeed
+from apps.market_feed.main import MarketFeed, MarketFeedNew
+from utils.fyers_api_helper import FyersApiHelper
+from apps.range_breakout.main import RangeBreakout
 from utils.zmq_helper import ZMQPublisher, ZMQSubscriber
 from apps.store_market_feed.main import StoreMarketFeed, StoreMarketFeedZmqSub
+
+
+def _fetch_access_authorization():
+    url = config.API_SERVER_URL + ServerUrl.ENDPOINT_TOKENS_API_SERVER
+
+    response = Helper.request_http_get(url, None)
+    if response.status_code != 200:
+        return ReturnValue(False, "Error while getting access authorization", error=response.reason)
+
+    response = response.json()
+    if response["success"]:
+        access_authorization = response["data"]["authorization"]
+        return ReturnValue(True, data=access_authorization)
+
+    return ReturnValue(False, response["message"], error=response["error"])
 
 
 def market_feed(symbols):
@@ -24,6 +43,20 @@ def market_feed(symbols):
         return
     mf.initialize()
     mf.run()
+
+
+def market_feed_new(symbols):
+    z = ZMQPublisher("*", config.ZMQ_PORT)
+    result = _fetch_access_authorization()
+    if not result.success:
+        print(result)
+        return
+
+    access_authorization = result.data
+    fah = FyersApiHelper(symbols, access_authorization, log_path="./")
+    mf1 = MarketFeedNew(fah, z)
+    mf1.initialize()
+    mf1.run()
 
 
 def plot_graph(symbol):
@@ -74,13 +107,22 @@ def bod_task():
     b.generate_auth_code()
 
 
+def range_breakout():
+    r = RedisDatabase()
+    z = ZMQSubscriber(config.ZMQ_HOST, config.ZMQ_PORT)
+    rb = RangeBreakout(r, z)
+    rb.wait_for_time_to_start()
+    rb.intialize()
+    rb.run()
+
+
 args = sys.argv
 
 if len(args) < 2:
     print("Too less parameters")
     sys.exit()
 
-if args[1] in {"store_market_feed", "market_feed"}:
+if args[1] in {"store_market_feed", "market_feed", "market_feed_new"}:
     _args = args[2].split(", ")
     func = globals()[args[1]]
     func(_args)
@@ -90,7 +132,7 @@ elif args[1] in {"plot_graph"}:
     func = globals()[args[1]]
     func(_args)
 
-elif args[1] in {"bod_task", "store_feed_zmq_sub"}:
+elif args[1] in {"bod_task", "store_feed_zmq_sub", "range_breakout"}:
     func = globals()[args[1]]
     func()
 
