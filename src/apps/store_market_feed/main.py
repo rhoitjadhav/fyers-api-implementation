@@ -4,7 +4,7 @@ import json
 import requests
 from typing import List
 from datetime import datetime, time
-from fyers_api.websocket.ws import FyersSocket
+from fyers_api.Websocket.ws import FyersSocket
 
 # Modules
 from utils.helper import Helper
