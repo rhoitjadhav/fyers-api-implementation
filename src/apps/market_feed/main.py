@@ -1,6 +1,7 @@
 # Packages
+import traceback
 from typing import List
-from fyers_api.websocket.ws import FyersSocket
+from fyers_api.Websocket.ws import FyersSocket
 
 # Modules
 from utils.helper import Helper
@@ -8,6 +9,7 @@ from utils.zmq_helper import ZMQPublisher
 from constants.server_url import ServerUrl
 from utils.data_classes import ReturnValue
 from db.redis_database import RedisDatabase
+from utils.fyers_api_helper import FyersApiHelper
 
 
 class MarketFeed(FyersSocket):
@@ -43,9 +45,36 @@ class MarketFeed(FyersSocket):
         return ReturnValue(False, response["message"], error=response["error"])
 
     def publish_feed(self):
-        feed = Helper.convert_to_json(self.response)
-        self._zmq_publisher.send_msg(feed)
+        try:
+            feed = Helper.convert_to_json(self.response)
+            self._zmq_publisher.send_msg(feed)
+        except Exception as _:
+            print(traceback.print_exc())
 
     def run(self):
         print(f"Started Feed for {self._symbols}")
         self.subscribe()
+
+
+class MarketFeedNew:
+    def __init__(
+            self,
+            fyers_api_helper: FyersApiHelper,
+            zmq_publisher: ZMQPublisher
+    ):
+        self._fyers_api_helper = fyers_api_helper
+        self._zmq_publisher = zmq_publisher
+
+    def initialize(self):
+        self._zmq_publisher.connect()
+
+    def publish_feed(self, feed):
+        try:
+            _feed = Helper.convert_to_json(feed)
+            self._zmq_publisher.send_msg(_feed)
+
+        except Exception as _:
+            print(traceback.print_exc())
+
+    def run(self):
+        self._fyers_api_helper.start_stream(self.publish_feed)
