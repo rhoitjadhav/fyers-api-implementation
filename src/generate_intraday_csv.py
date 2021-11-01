@@ -1,12 +1,17 @@
+# Packages
 import sys
 import json
 import pandas as pd
+from datetime import datetime
+
+# Modules
+from utils.helper import Helper
 from db.redis_database import RedisDatabase
 
 r = RedisDatabase()
 
 symbol = sys.argv[1]
-filename = sys.argv[2]
+filename = sys.argv[2] + "_" + Helper.get_current_time_in_str("%d%b%Y.csv")
 
 timeseries_data = r.hgetall(symbol)
 
@@ -24,4 +29,4 @@ df = pd.DataFrame(rows, columns=columns)
 df.set_index("timecode", inplace=True)
 df.index = pd.to_datetime(df.index)
 
-df.to_csv(filename, header=True)
+df.to_csv(f"symbols_feed_data/{filename}", header=True)
